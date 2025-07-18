@@ -1,0 +1,62 @@
+@startuml
+
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+title Диаграмма контейнеров
+
+System_Ext(ai_services, "AI-Сервисы", "Python")
+System_Ext(fintech_services, "Fintech-Сервисы", "Java/Golang")
+
+System_Boundary(infrastructure_services, "Будущее 2.0"){
+    Container(dwh, "DWH", "Microsoft SQL-сервера 2016")
+    Container(power_bi, "Power BI")
+    Container(data_bus, "Apache Camel", "Шина данных")
+    Container(internal_services, "Внутренние-Сервисы")
+    Container(haproxy_int, "API Gateway INT", "HAProxy")
+    Container(haproxy_ext, "API Gateway EXT", "HAProxy")
+    Container(freeipa, "Служба каталогов", "FreeIPA")
+    Container(microfrontend, "Microfrontend", "React")
+    Container(bpf, "Backend for frontend", "GoLang")
+
+    Rel(data_bus, dwh,)
+    Rel(haproxy_int, data_bus,)
+    Rel(haproxy_int, power_bi,)
+    Rel(haproxy_int, microfrontend,)
+    Rel(microfrontend, bpf,)
+    Rel(bpf, haproxy_ext,)
+    Rel(data_bus, haproxy_ext,)
+    Rel(haproxy_ext, ai_services,)
+    Rel(haproxy_ext, fintech_services,)
+
+    System_Boundary(apache_iceberg, "Apache Iceberg",){
+        Container(datahub, "Datahub")
+        Container(apache_spark, "Apache Spark")
+        Container(minio, "Minio", "S3 storage",)
+        Container(nessie, "Nessie")
+        Container(apache_airflow, "Apache Airflow")
+        Container(dremio, "Dremio")
+        Container(apache_kafka, "Apache Kafka")
+
+        Rel(apache_airflow, dremio,)
+        Rel(apache_airflow, apache_spark,)
+        Rel(apache_airflow, apache_kafka,)
+        Rel(dremio, nessie,)
+        Rel(dremio, minio,)
+        Rel(apache_spark, apache_kafka,)
+        Rel(datahub, apache_spark,)
+        Rel(datahub, dremio,)
+        Rel(datahub, nessie,)
+    }
+
+    Rel(bpf, apache_kafka,)
+    Rel(bpf, dremio,)
+    Rel(bpf, data_bus,)
+    Rel(bpf, internal_services,)
+    Rel(internal_services, apache_kafka,)
+    Rel(data_bus, apache_kafka,)
+    Rel(power_bi, dremio,)
+}
+
+Rel(ai_services, haproxy_int,)
+Rel(fintech_services, haproxy_int,)
+@enduml
