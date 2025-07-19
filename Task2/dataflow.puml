@@ -1,0 +1,21 @@
+@startuml
+rectangle AI
+rectangle Finance
+rectangle Analytics
+rectangle Integrations
+rectangle BigData
+rectangle WebApplications
+rectangle Platform
+
+WebApplications --> Platform : Пользовательские запросы
+Platform --> BigData : Данные для обработки
+BigData --> Analytics : Исходные данные
+Analytics --> Finance : Финансовые метрики
+Finance --> WebApplications : Отчётность
+
+BigData --> AI : Данные для обучения
+AI --> Analytics : Предсказания
+
+Integrations --> BigData : Внешние данные
+Integrations --> Platform : Интеграционные данные
+@enduml
